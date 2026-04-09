@@ -1,98 +1,91 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AP SCHILDER - Etiketten</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
+/* Container für die exakte Maßstabs-Vorschau (99.1mm x 42.3mm) */
+.preview-wrapper {
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 991 / 423;
+    background: #e5e7eb;
+    padding: 1px;
+}
 
-    <header class="bg-[#064e3b] p-5 shadow-md">
-        <div class="max-w-6xl mx-auto">
-            <h1 class="text-3xl font-black text-white tracking-widest">AP SCHILDER</h1>
-        </div>
-    </header>
+.label-box {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: background-color 0.2s, color 0.2s;
+    border: 1px solid #ccc;
+}
 
-    <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-10 mt-6">
-        
-        <section class="bg-white p-8 rounded-lg shadow-xl border border-gray-200 space-y-6">
-            <h2 class="text-xl font-bold border-b pb-2 uppercase text-gray-700">Einstellungen</h2>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">Stoffklasse</label>
-                    <select id="subClass" class="w-full p-3 border-2 rounded-md bg-gray-50 focus:border-[#064e3b] outline-none font-bold">
-                        <option value="white">Wasser / Neutral (Weiß)</option>
-                        <option value="yellow">Gase (Gelb)</option>
-                        <option value="red">Dampf (Rot)</option>
-                        <option value="brown">Brennbare Stoffe (Braun)</option>
-                        <option value="green">Wasser (Grün)</option>
-                        <option value="blue">Luft (Blau)</option>
-                        <option value="violet">Säuren / Laugen (Violett)</option>
-                    </select>
-                </div>
+/* Haupttext */
+.label-text {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 1.1;
+    font-size: 2.5rem;
+    word-break: break-word;
+}
 
-                <div>
-                    <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">Beschriftung</label>
-                    <input type="text" id="mainText" class="w-full p-3 border-2 rounded-md font-bold focus:border-[#064e3b] outline-none" placeholder="z.B. STICKSTOFF">
-                </div>
+/* Unterer Bereich: Striktes Grid! */
+.label-bottom {
+    height: 35%;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 0.8fr; /* Platzverteilung: GHS | Signalwort | Pfeil */
+    align-items: center;
+}
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">Signalwort</label>
-                        <select id="signal" class="w-full p-3 border-2 rounded-md font-bold focus:border-[#064e3b] outline-none">
-                            <option value="">Keines</option>
-                            <option value="GEFAHR">GEFAHR</option>
-                            <option value="ACHTUNG">ACHTUNG</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">Pfeil</label>
-                        <select id="arrowDir" class="w-full p-3 border-2 rounded-md font-bold focus:border-[#064e3b] outline-none">
-                            <option value="right">Rechts →</option>
-                            <option value="left">Links ←</option>
-                            <option value="up">Oben ↑</option>
-                            <option value="down">Unten ↓</option>
-                        </select>
-                    </div>
-                </div>
+/* Zonen im Footer */
+.ghs-zone { 
+    display: flex; 
+    gap: 4px; 
+    align-items: center; 
+    height: 100%;
+}
 
-                <div>
-                    <label class="block text-sm font-bold mb-2 text-gray-600 uppercase">GHS Symbole (Max. 3)</label>
-                    <div id="ghsPicker" class="grid grid-cols-5 gap-2 bg-gray-50 p-3 rounded-md border-2">
-                        </div>
-                </div>
-            </div>
+.signal-zone { 
+    text-align: center; 
+    font-weight: 900; 
+    font-style: italic; 
+    font-size: 1.3rem; 
+}
 
-            <button id="pdfBtn" class="w-full bg-[#064e3b] text-white py-4 rounded-md font-black text-2xl hover:bg-green-800 transition-all shadow-md mt-4 tracking-widest">
-                DRUCKEN
-            </button>
-        </section>
+.arrow-zone { 
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 60%;
+}
 
-        <section class="flex flex-col items-center justify-start pt-4">
-            <span class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-widest">Live-Vorschau</span>
-            
-            <div class="preview-wrapper shadow-2xl">
-                <div id="previewCard" class="label-box">
-                    <div id="pText" class="label-text">TEXT</div>
-                    <div class="label-bottom">
-                        <div id="pGhs" class="ghs-zone"></div>
-                        <div id="pSignal" class="signal-zone"></div>
-                        <div id="pArrow" class="arrow-zone">→</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
-                <p><strong>Druck-Hinweis:</strong> Wähle im Druckmenü unbedingt <b>"Tatsächliche Größe"</b> (Skalierung 100%), damit der Druck exakt auf den Avery Zweckform Bogen passt.</p>
-            </div>
-        </section>
+/* GHS Rauten Design für die Vorschau */
+.ghs-diamond { 
+    width: 32px; 
+    height: 32px; 
+    background: white; 
+    border: 3px solid #db1414; /* GHS Rot */
+    transform: rotate(45deg); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
 
-    </main>
+.ghs-inner-svg { 
+    transform: rotate(-45deg); 
+    width: 85%; 
+    height: 85%; 
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+/* Hintergrund- und Textfarben der Stoffklassen */
+.bg-white { background-color: #ffffff; color: #000000; }
+.bg-yellow { background-color: #ffff00; color: #000000; }
+.bg-red { background-color: #ff0000; color: #ffffff; }
+.bg-brown { background-color: #8b4513; color: #ffffff; }
+.bg-green { background-color: #008000; color: #ffffff; }
+.bg-blue { background-color: #0000ff; color: #ffffff; }
+.bg-violet { background-color: #800080; color: #ffffff; }
