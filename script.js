@@ -1,152 +1,103 @@
 const { jsPDF } = window.jspdf;
 
-// GHS Daten (URLs von Wikipedia für die Vorschau)
-const GHS_URLS = {
-    ghs01: "https://upload.wikimedia.org/wikipedia/commons/3/3f/GHS-pictogram-explos.svg",
-    ghs02: "https://upload.wikimedia.org/wikipedia/commons/a/a2/GHS-pictogram-flamme.svg",
-    ghs03: "https://upload.wikimedia.org/wikipedia/commons/e/ee/GHS-pictogram-rondflam.svg",
-    ghs05: "https://upload.wikimedia.org/wikipedia/commons/1/1a/GHS-pictogram-acid.svg",
-    ghs07: "https://upload.wikimedia.org/wikipedia/commons/a/a7/GHS-pictogram-exclam.svg"
-};
+const ghsList = ["GHS01", "GHS02", "GHS03", "GHS05", "GHS07"];
+const ghsContainer = document.getElementById('ghsPicker');
 
-// GHS Selektoren erstellen
-const ghsGrid = document.getElementById('ghsSelectors');
-Object.keys(GHS_URLS).forEach(key => {
-    const label = document.createElement('label');
-    label.className = "flex flex-col items-center cursor-pointer p-1 border rounded hover:bg-white";
-    label.innerHTML = `
-        <img src="${GHS_URLS[key]}" class="w-8 h-8 mb-1">
-        <input type="checkbox" value="${key}" class="ghs-checkbox">
-    `;
-    ghsGrid.appendChild(label);
+ghsList.forEach(g => {
+    const div = document.createElement('label');
+    div.className = "flex flex-col items-center cursor-pointer p-1 border rounded hover:bg-white";
+    div.innerHTML = `<span class="text-[10px] font-bold">${g}</span>
+                     <input type="checkbox" value="${g}" class="ghs-check">`;
+    ghsContainer.appendChild(div);
 });
 
-function updatePreview() {
-    const text = document.getElementById('labelText').value || "BEISPIEL TEXT";
-    const subClass = document.getElementById('substanceClass').value;
-    const signal = document.getElementById('signalWord').value;
-    const flow = document.querySelector('input[name="flow"]:checked').value;
-    const selectedGhs = Array.from(document.querySelectorAll('.ghs-checkbox:checked'));
+function update() {
+    const sub = document.getElementById('subClass').value;
+    const txt = document.getElementById('mainText').value || "TEXT";
+    const sig = document.getElementById('signal').value;
+    const arr = document.getElementById('arrowDir').value;
+    const selectedGhs = Array.from(document.querySelectorAll('.ghs-check:checked')).slice(0, 3);
 
-    const previewLabel = document.getElementById('previewLabel');
-    const prevText = document.getElementById('prevText');
-    const prevGHS = document.getElementById('prevGHS');
-    const prevSignal = document.getElementById('prevSignal');
-    const prevArrow = document.getElementById('prevArrow');
-
-    // Farbe setzen
-    previewLabel.className = `preview-label-box bg-${subClass}`;
+    const card = document.getElementById('previewInner');
+    card.className = `preview-card c-${sub}`;
     
-    // Text
-    prevText.innerText = text;
+    document.getElementById('pText').innerText = txt;
+    document.getElementById('pSignal').innerText = sig;
     
-    // GHS
-    prevGHS.innerHTML = selectedGhs.map(cb => `
-        <div class="ghs-icon-mini"><img src="${GHS_URLS[cb.value]}"></div>
-    `).join('');
+    const arrows = { right: '→', left: '←', up: '↑', down: '↓' };
+    document.getElementById('pArrow').innerText = arrows[arr];
 
-    // Signal & Pfeil
-    prevSignal.innerText = signal;
-    prevArrow.innerText = (flow === 'left' ? '←' : flow === 'right' ? '→' : flow === 'up' ? '↑' : '↓');
-
-    // Auto-Scaling Text
-    let size = 40;
-    prevText.style.fontSize = size + "px";
-    while (prevText.scrollHeight > prevText.offsetHeight && size > 10) {
-        size--;
-        prevText.style.fontSize = size + "px";
-    }
+    document.getElementById('pGhs').innerHTML = selectedGhs.map(g => 
+        `<div class="ghs-mini"><span>${g.value}</span></div>`
+    ).join('');
 }
 
-async function generatePDF() {
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-    
-    // Avery L4776 Maße
-    const labelW = 99.1;
-    const labelH = 42.3;
-    const marginTop = 21.6;
-    const marginLeft = 6.4;
-    
-    const count = Math.min(parseInt(document.getElementById('quantity').value), 12);
-    const subClass = document.getElementById('substanceClass').value;
-    const text = document.getElementById('labelText').value;
-    const signal = document.getElementById('signalWord').value;
-    const flow = document.querySelector('input[name="flow"]:checked').value;
-    const selectedGhs = Array.from(document.querySelectorAll('.ghs-checkbox:checked'));
+function drawGHS(doc, x, y, label) {
+    doc.setDrawColor(255, 0, 0);
+    doc.setLineWidth(0.6);
+    doc.setFillColor(255, 255, 255);
+    // Raute zeichnen
+    doc.line(x, y - 4, x + 4, y);
+    doc.line(x + 4, y, x, y + 4);
+    doc.line(x, y + 4, x - 4, y);
+    doc.line(x - 4, y, x, y - 4);
+    // Text klein hinein
+    doc.setFontSize(5);
+    doc.setTextColor(0);
+    doc.text(label, x, y + 1.5, { align: 'center' });
+}
 
-    const colors = {
-        white: [255,255,255], yellow: [255,255,0], red: [255,0,0], 
-        brown: [139,69,19], green: [0,128,0], blue: [0,0,255], violet: [128,0,128]
+document.getElementById('pdfBtn').onclick = () => {
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const config = {
+        w: 99.1, h: 42.3, mt: 21.6, ml: 6.4,
+        sub: document.getElementById('subClass').value,
+        txt: document.getElementById('mainText').value,
+        sig: document.getElementById('signal').value,
+        arr: document.getElementById('arrowDir').value,
+        ghs: Array.from(document.querySelectorAll('.ghs-check:checked')).slice(0,3).map(c => c.value)
     };
 
-    for (let i = 0; i < count; i++) {
-        const col = i % 2;
-        const row = Math.floor(i / 2);
-        const x = marginLeft + (col * labelW);
-        const y = marginTop + (row * labelH);
+    const colors = { white:[255,255,255], yellow:[255,255,0], red:[255,0,0], brown:[139,69,19], green:[0,128,0], blue:[0,0,255], violet:[128,0,128] };
+
+    for (let i = 0; i < 12; i++) {
+        const x = config.ml + (i % 2 * config.w);
+        const y = config.mt + (Math.floor(i / 2) * config.h);
 
         // Hintergrund
-        doc.setFillColor(...colors[subClass]);
-        doc.rect(x, y, labelW, labelH, 'F');
+        doc.setFillColor(...colors[config.sub]);
+        doc.rect(x, y, config.w, config.h, 'F');
         
-        // Kontrastfarbe für Text
-        const isDark = !['white', 'yellow'].includes(subClass);
+        // Textfarbe
+        const isDark = !['white', 'yellow'].includes(config.sub);
         doc.setTextColor(isDark ? 255 : 0);
 
         // Haupttext
+        doc.setFontSize(22);
         doc.setFont("helvetica", "bold");
-        let fontSize = 25;
-        doc.setFontSize(fontSize);
-        // Einfaches Wrapping
-        const splitText = doc.splitTextToSize(text, labelW - 10);
-        doc.text(splitText, x + labelW/2, y + 15, { align: 'center' });
+        doc.text(config.txt, x + config.w/2, y + 18, { align: 'center', maxWidth: config.w - 10 });
 
-        // GHS Symbole (Wir zeichnen Rauten, da SVGs im PDF oft Probleme machen ohne Proxy)
-        doc.setDrawColor(255, 0, 0);
-        doc.setLineWidth(0.5);
-        selectedGhs.forEach((ghs, idx) => {
-            const gx = x + 10 + (idx * 12);
-            const gy = y + 32;
-            doc.setFillColor(255,255,255);
-            // Raute
-            doc.line(gx, gy-4, gx+4, gy);
-            doc.line(gx+4, gy, gx, gy+4);
-            doc.line(gx, gy+4, gx-4, gy);
-            doc.line(gx-4, gy, gx, gy-4);
-            doc.setFontSize(4);
-            doc.setTextColor(0);
-            doc.text(ghs.value.toUpperCase(), gx, gy + 1, {align:'center'});
+        // GHS (Links)
+        config.ghs.forEach((g, idx) => {
+            drawGHS(doc, x + 10 + (idx * 11), y + 34, g);
         });
 
-        // Signalwort
-        doc.setTextColor(isDark ? 255 : 0);
+        // Signalwort (Mitte)
         doc.setFontSize(12);
-        doc.text(signal, x + labelW - 25, y + 32, { align: 'right' });
+        doc.setTextColor(isDark ? 255 : 0);
+        doc.text(config.sig, x + config.w/2, y + 36, { align: 'center' });
 
-        // Pfeil (gezeichnet für Schärfe)
+        // Pfeil (Rechts)
         doc.setDrawColor(isDark ? 255 : 0);
         doc.setLineWidth(1.5);
-        const ax = x + labelW - 12;
-        const ay = y + 32;
-        if(flow === 'right') {
-            doc.line(ax-5, ay, ax+5, ay);
-            doc.line(ax+5, ay, ax+2, ay-2);
-            doc.line(ax+5, ay, ax+2, ay+2);
-        } else if(flow === 'left') {
-            doc.line(ax+5, ay, ax-5, ay);
-            doc.line(ax-5, ay, ax-2, ay-2);
-            doc.line(ax-5, ay, ax-2, ay+2);
-        } // ... up/down analog
+        const ax = x + config.w - 12; const ay = y + 34;
+        if(config.arr === 'right') { doc.line(ax-4, ay, ax+4, ay); doc.line(ax+4, ay, ax+1, ay-2); doc.line(ax+4, ay, ax+1, ay+2); }
+        else if(config.arr === 'left') { doc.line(ax+4, ay, ax-4, ay); doc.line(ax-4, ay, ax-1, ay-2); doc.line(ax-4, ay, ax-1, ay+2); }
+        else if(config.arr === 'up') { doc.line(ax, ay+4, ax, ay-4); doc.line(ax, ay-4, ax-2, ay-1); doc.line(ax, ay-4, ax+2, ay-1); }
+        else { doc.line(ax, ay-4, ax, ay+4); doc.line(ax, ay+4, ax-2, ay+1); doc.line(ax, ay+4, ax+2, ay+1); }
     }
+    doc.save("Etiketten.pdf");
+};
 
-    doc.save("AP_Schilder_Druck.pdf");
-}
-
-// Event Listener
-document.querySelectorAll('input, select').forEach(el => {
-    el.addEventListener('input', updatePreview);
-});
-document.getElementById('downloadBtn').addEventListener('click', generatePDF);
-
-// Init
-updatePreview();
+document.querySelectorAll('input, select').forEach(el => el.oninput = update);
+update();
