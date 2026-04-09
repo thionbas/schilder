@@ -3,29 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AP SCHILDER - Chemie Etiketten Konfigurator</title>
+    <title>AP SCHILDER - Etiketten-Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-white text-gray-800 font-sans">
+<body class="bg-white text-gray-900">
 
-    <header class="bg-white border-b-4 border-green-900 p-4 flex items-center shadow-md">
-        <div class="logo-heart-container mr-3">
-            <div class="heart-half"></div>
-        </div>
-        <h1 class="text-3xl font-bold text-green-900 tracking-tight">AP SCHILDER</h1>
+    <header class="border-b-4 border-[#064e3b] p-6 flex items-center bg-white shadow-sm">
+        <div class="logo-half-heart mr-4"></div>
+        <h1 class="text-4xl font-black text-[#064e3b] tracking-tighter">AP SCHILDER</h1>
     </header>
 
-    <main class="max-w-7xl mx-auto p-6">
-        <div class="grid grid-cols-1 lg:grid-cols-[400px,1fr] gap-10">
+    <main class="max-w-6xl mx-auto p-8 grid grid-cols-1 lg:grid-cols-2 gap-12">
+        
+        <section class="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
+            <h2 class="text-xl font-bold border-b border-green-200 pb-2 text-[#064e3b]">Konfiguration</h2>
             
-            <section class="bg-gray-50 p-6 rounded-lg border border-green-100 shadow-sm space-y-5">
-                <h2 class="text-xl font-semibold text-green-800">1. Konfiguration</h2>
-                
+            <div class="grid grid-cols-1 gap-4">
                 <div>
-                    <label class="block text-sm font-medium mb-1">Stoffklasse (Hintergrundfarbe)</label>
-                    <select id="substanceClass" class="w-full p-2 border rounded bg-white">
+                    <label class="block text-sm font-bold mb-1">Stoffklasse</label>
+                    <select id="substanceClass" class="w-full p-2 border rounded bg-white border-gray-300">
                         <option value="white">Hinweisschild (Weiß)</option>
                         <option value="yellow">Stickstoff / Gase (Gelb)</option>
                         <option value="red">Dampf (Rot)</option>
@@ -37,56 +35,53 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium mb-1">Etiketten-Text (wird auto-skaliert)</label>
-                    <input type="text" id="labelHeading" placeholder="z.B. Schwefelsäure 98%" class="w-full p-2 border rounded">
+                    <label class="block text-sm font-bold mb-1">Etiketten-Text</label>
+                    <textarea id="labelText" class="w-full p-2 border rounded border-gray-300" rows="2" placeholder="Text eingeben..."></textarea>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium mb-1">Flussrichtung</label>
-                    <div class="grid grid-cols-2 gap-2 text-sm bg-white p-2 border rounded">
-                        <label class="flex items-center gap-2"><input type="radio" name="direction" value="left"> <span class="text-xl">←</span> Links</label>
-                        <label class="flex items-center gap-2"><input type="radio" name="direction" value="right" checked> <span class="text-xl">→</span> Rechts</label>
-                        <label class="flex items-center gap-2"><input type="radio" name="direction" value="up"> <span class="text-xl">↑</span> Oben</label>
-                        <label class="flex items-center gap-2"><input type="radio" name="direction" value="down"> <span class="text-xl">↓</span> Unten</label>
+                    <label class="block text-sm font-bold mb-1">Flussrichtung (Pfeil)</label>
+                    <div class="flex gap-4 p-2 bg-white border rounded border-gray-300">
+                        <label class="flex items-center gap-1"><input type="radio" name="flow" value="left"> Links</label>
+                        <label class="flex items-center gap-1"><input type="radio" name="flow" value="right" checked> Rechts</label>
+                        <label class="flex items-center gap-1"><input type="radio" name="flow" value="up"> Oben</label>
+                        <label class="flex items-center gap-1"><input type="radio" name="flow" value="down"> Unten</label>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium mb-1">GHS Piktogramme (Mehrfachauswahl)</label>
-                    <div class="grid grid-cols-3 gap-2 mt-2 bg-white p-2 border rounded" id="ghsContainer">
+                    <label class="block text-sm font-bold mb-1">GHS Symbole</label>
+                    <div id="ghsSelectors" class="grid grid-cols-5 gap-2 bg-white p-3 border rounded border-gray-300">
                         </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium mb-1">Signalwort</label>
-                    <select id="signalWord" class="w-full p-2 border rounded bg-white">
-                        <option value="">Keines</option>
-                        <option value="GEFAHR">GEFAHR</option>
-                        <option value="ACHTUNG">ACHTUNG</option>
-                    </select>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Signalwort</label>
+                        <select id="signalWord" class="w-full p-2 border rounded bg-white border-gray-300">
+                            <option value="">Keines</option>
+                            <option value="GEFAHR">GEFAHR</option>
+                            <option value="ACHTUNG">ACHTUNG</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Anzahl (1-12)</label>
+                        <input type="number" id="quantity" min="1" max="12" value="12" class="w-full p-2 border rounded border-gray-300">
+                    </div>
                 </div>
+            </div>
 
-                <div>
-                    <label class="block text-sm font-medium mb-1">Anzahl Etiketten (max. 12)</label>
-                    <input type="number" id="quantity" min="1" max="12" value="1" class="w-full p-2 border rounded">
+            <button id="downloadBtn" class="w-full bg-[#064e3b] text-white py-4 rounded-lg font-bold hover:bg-green-800 transition-all shadow-lg text-lg">
+                PDF für Avery L4776REV erstellen
+            </button>
+        </section>
+
+        <section class="flex flex-col items-center">
+            <h2 class="text-sm font-bold text-gray-400 uppercase mb-4 tracking-widest">Live-Vorschau</h2>
+            <div id="previewContainer" class="w-full max-w-[500px] border shadow-2xl relative aspect-[99.1/42.3] overflow-hidden">
                 </div>
-
-                <button id="generateBtn" class="w-full bg-green-900 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition shadow">
-                    PDF für Avery L4776REV herunterladen
-                </button>
-            </section>
-
-            <section class="border-2 border-dashed border-gray-300 p-6 flex flex-col items-center justify-start bg-gray-50 rounded-lg">
-                <h2 class="text-sm uppercase text-gray-400 mb-6 tracking-wider">Live-Vorschau (Einzeletikett)</h2>
-                
-                <div class="w-full max-w-[600px] shadow-2xl">
-                    <div id="previewLabel" class="preview-label-base bg-white relative overflow-hidden flex flex-col border border-gray-300">
-                        </div>
-                </div>
-                <p class="text-xs text-gray-500 mt-4">Maße: 99,1mm x 42,3mm (Entspricht Avery Zweckform L4776REV)</p>
-            </section>
-
-        </div>
+            <p class="text-xs text-gray-400 mt-4 italic">Hinweis: Die PDF-Qualität ist deutlich höher als diese Web-Vorschau.</p>
+        </section>
     </main>
 
     <script src="script.js"></script>
