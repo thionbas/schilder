@@ -3,83 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AP SCHILDER - Konfigurator</title>
+    <title>AP SCHILDER - Etiketten</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <header class="bg-white border-b-4 border-[#064e3b] p-4 flex items-center shadow-sm">
-        <div class="half-heart"></div>
-        <h1 class="text-3xl font-black text-[#064e3b] ml-4 tracking-tighter">AP SCHILDER</h1>
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
+
+    <header class="bg-[#064e3b] p-5 shadow-md">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-3xl font-black text-white tracking-widest">AP SCHILDER</h1>
+        </div>
     </header>
 
-    <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="bg-white p-6 rounded-xl shadow-lg space-y-4">
-            <h2 class="text-xl font-bold border-b pb-2">Einstellungen</h2>
+    <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-10 mt-6">
+        
+        <section class="bg-white p-8 rounded-lg shadow-xl border border-gray-200 space-y-6">
+            <h2 class="text-xl font-bold border-b pb-2 uppercase text-gray-700">Einstellungen</h2>
             
-            <div>
-                <label class="block text-sm font-bold mb-1">Stoffklasse</label>
-                <select id="subClass" class="w-full p-2 border rounded">
-                    <option value="white">Wasser (Weiß)</option>
-                    <option value="yellow">Gase (Gelb)</option>
-                    <option value="red">Dampf (Rot)</option>
-                    <option value="brown">Brennbare Stoffe (Braun)</option>
-                    <option value="green">Wasser (Grün)</option>
-                    <option value="blue">Luft (Blau)</option>
-                    <option value="violet">Säuren/Laugen (Violett)</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold mb-1">Text</label>
-                <input type="text" id="mainText" class="w-full p-2 border rounded" placeholder="z.B. Stickstoff">
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-bold mb-1">Signalwort</label>
-                    <select id="signal" class="w-full p-2 border rounded">
-                        <option value="">Keines</option>
-                        <option value="GEFAHR">GEFAHR</option>
-                        <option value="ACHTUNG">ACHTUNG</option>
+                    <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">Stoffklasse</label>
+                    <select id="subClass" class="w-full p-3 border-2 rounded-md bg-gray-50 focus:border-[#064e3b] outline-none font-bold">
+                        <option value="white">Wasser / Neutral (Weiß)</option>
+                        <option value="yellow">Gase (Gelb)</option>
+                        <option value="red">Dampf (Rot)</option>
+                        <option value="brown">Brennbare Stoffe (Braun)</option>
+                        <option value="green">Wasser (Grün)</option>
+                        <option value="blue">Luft (Blau)</option>
+                        <option value="violet">Säuren / Laugen (Violett)</option>
                     </select>
                 </div>
+
                 <div>
-                    <label class="block text-sm font-bold mb-1">Pfeil</label>
-                    <select id="arrowDir" class="w-full p-2 border rounded">
-                        <option value="right">Rechts →</option>
-                        <option value="left">Links ←</option>
-                        <option value="up">Oben ↑</option>
-                        <option value="down">Unten ↓</option>
-                    </select>
+                    <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">Beschriftung</label>
+                    <input type="text" id="mainText" class="w-full p-3 border-2 rounded-md font-bold focus:border-[#064e3b] outline-none" placeholder="z.B. STICKSTOFF">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">Signalwort</label>
+                        <select id="signal" class="w-full p-3 border-2 rounded-md font-bold focus:border-[#064e3b] outline-none">
+                            <option value="">Keines</option>
+                            <option value="GEFAHR">GEFAHR</option>
+                            <option value="ACHTUNG">ACHTUNG</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">Pfeil</label>
+                        <select id="arrowDir" class="w-full p-3 border-2 rounded-md font-bold focus:border-[#064e3b] outline-none">
+                            <option value="right">Rechts →</option>
+                            <option value="left">Links ←</option>
+                            <option value="up">Oben ↑</option>
+                            <option value="down">Unten ↓</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-600 uppercase">GHS Symbole (Max. 3)</label>
+                    <div id="ghsPicker" class="grid grid-cols-5 gap-2 bg-gray-50 p-3 rounded-md border-2">
+                        </div>
                 </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-bold mb-2">GHS (max. 3)</label>
-                <div id="ghsPicker" class="grid grid-cols-5 gap-2 bg-gray-50 p-2 rounded"></div>
-            </div>
-
-            <button id="pdfBtn" class="w-full bg-[#064e3b] text-white py-4 rounded-lg font-bold text-lg hover:bg-green-900 transition shadow-md">
-                PDF FÜR AVERY L4776 ERSTELLEN
+            <button id="pdfBtn" class="w-full bg-[#064e3b] text-white py-4 rounded-md font-black text-2xl hover:bg-green-800 transition-all shadow-md mt-4 tracking-widest">
+                DRUCKEN
             </button>
-        </div>
+        </section>
 
-        <div class="flex flex-col items-center">
-            <span class="text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Live-Vorschau</span>
-            <div id="preview" class="preview-container">
-                <div id="previewInner" class="preview-card">
-                    <div id="pText" class="p-text">TEXT</div>
-                    <div class="p-footer">
-                        <div id="pGhs" class="p-ghs-box"></div>
-                        <div id="pSignal" class="p-signal"></div>
-                        <div id="pArrow" class="p-arrow">→</div>
+        <section class="flex flex-col items-center justify-start pt-4">
+            <span class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-widest">Live-Vorschau</span>
+            
+            <div class="preview-wrapper shadow-2xl">
+                <div id="previewCard" class="label-box">
+                    <div id="pText" class="label-text">TEXT</div>
+                    <div class="label-bottom">
+                        <div id="pGhs" class="ghs-zone"></div>
+                        <div id="pSignal" class="signal-zone"></div>
+                        <div id="pArrow" class="arrow-zone">→</div>
                     </div>
                 </div>
             </div>
-        </div>
+            
+            <div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+                <p><strong>Druck-Hinweis:</strong> Wähle im Druckmenü unbedingt <b>"Tatsächliche Größe"</b> (Skalierung 100%), damit der Druck exakt auf den Avery Zweckform Bogen passt.</p>
+            </div>
+        </section>
+
     </main>
+
     <script src="script.js"></script>
 </body>
 </html>
