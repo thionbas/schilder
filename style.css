@@ -1,76 +1,63 @@
-/* Halbes Herz Logo - vertikal geteilt */
-.logo-half-heart {
-    width: 20px;
-    height: 35px;
-    background-color: #064e3b;
-    border-radius: 20px 0 0 20px;
+/* Das halbe Herz: Exakt vertikal geteilt */
+.logo-container {
+    width: 20px; /* Nur die halbe Breite */
+    height: 40px;
     position: relative;
+    overflow: hidden;
+    margin-right: 15px;
 }
-.logo-half-heart::before {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
+
+.heart-full {
+    width: 40px;
+    height: 40px;
+    background-color: #064e3b;
+    position: relative;
+    transform: rotate(-45deg);
+    transform-origin: center;
+    left: 0; /* Positioniert, dass nur die linke Hälfte im Container sichtbar ist */
+}
+
+.heart-full::before,
+.heart-full::after {
+    content: "";
+    width: 40px;
+    height: 40px;
     background-color: #064e3b;
     border-radius: 50%;
-    top: -10px;
-    left: 0;
+    position: absolute;
 }
 
-/* Stofffarben */
-.class-white { background-color: #ffffff; color: #000; border: 1px solid #ccc; }
-.class-yellow { background-color: #ffff00; color: #000; }
-.class-red { background-color: #ff0000; color: #fff; }
-.class-brown { background-color: #8b4513; color: #fff; }
-.class-green { background-color: #008000; color: #fff; }
-.class-blue { background-color: #0000ff; color: #fff; }
-.class-violet { background-color: #800080; color: #fff; }
+.heart-full::before { top: -20px; left: 0; }
+.heart-full::after { left: 20px; top: 0; }
 
+/* Vorschau-Styles */
 #previewContainer {
+    width: 100%;
+    max-width: 495px; /* Maßstäblich zu 99.1mm */
+    aspect-ratio: 991 / 423;
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 15px;
     box-sizing: border-box;
-}
-
-.preview-text {
-    height: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-weight: bold;
-    word-break: break-word;
-    overflow: hidden;
-}
-
-.preview-bottom {
-    height: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    border: 1px solid #ddd;
     position: relative;
 }
 
-.preview-ghs {
+.ghs-diamond-preview {
+    width: 35px;
+    height: 35px;
+    border: 2px solid red;
+    transform: rotate(45deg);
     display: flex;
-    gap: 5px;
-    height: 30px;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    margin: 5px;
 }
 
-.preview-ghs img {
-    height: 100%;
-}
-
-.preview-signal {
+.ghs-inner-icon {
+    transform: rotate(-45deg);
     font-size: 10px;
     font-weight: bold;
-    margin-top: 2px;
-}
-
-.preview-arrow {
-    position: absolute;
-    font-weight: bold;
-    font-size: 24px;
+    color: black;
 }
