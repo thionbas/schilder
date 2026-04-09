@@ -1,75 +1,89 @@
-/* Logo: Exakt halbes Herz */
-.half-heart {
-    width: 20px;
-    height: 35px;
-    background-color: #064e3b;
-    border-radius: 20px 0 0 20px;
-    position: relative;
-}
-.half-heart::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: #064e3b;
-    bottom: -10px;
-    left: 0;
-    clip-path: polygon(0 0, 100% 0, 0 100%);
-}
-
-/* Vorschau: 99.1mm x 42.3mm im Verhältnis */
-.preview-container {
+/* Container für die exakte Maßstabs-Vorschau (99.1 x 42.3) */
+.preview-wrapper {
     width: 100%;
-    max-width: 480px;
+    max-width: 500px;
     aspect-ratio: 991 / 423;
-    background: #ccc;
+    background: #e5e7eb;
     padding: 1px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-.preview-card {
+.label-box {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 12px;
+    padding: 15px;
     box-sizing: border-box;
+    overflow: hidden;
+    transition: background-color 0.3s;
 }
 
-.p-text {
+/* Haupttext */
+.label-text {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
     font-weight: 900;
     text-align: center;
     text-transform: uppercase;
+    line-height: 1.1;
+    font-size: 2.5rem;
+    word-break: break-word;
 }
 
-.p-footer {
+/* Der untere Bereich (striktes Grid verhindert Überlappen!) */
+.label-bottom {
     height: 40px;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* Verhindert Überlappung */
-    align-items: center;
+    grid-template-columns: 1.5fr 1fr 1fr; /* Links (GHS) | Mitte (Signal) | Rechts (Pfeil) */
+    align-items: end;
+    gap: 5px;
 }
 
-.p-ghs-box { display: flex; gap: 4px; }
-.ghs-mini {
-    width: 30px; height: 30px; border: 2px solid red; 
-    transform: rotate(45deg); background: white;
-    display: flex; align-items: center; justify-content: center;
+/* Zonen im Footer */
+.ghs-zone { 
+    display: flex; 
+    gap: 4px; 
+    align-items: end; 
 }
-.ghs-mini span { transform: rotate(-45deg); font-size: 6px; font-weight: bold; color: black; }
+.signal-zone { 
+    text-align: center; 
+    font-weight: 900; 
+    font-style: italic; 
+    font-size: 1.2rem; 
+    padding-bottom: 2px;
+}
+.arrow-zone { 
+    text-align: right; 
+    font-size: 3rem; 
+    font-weight: bold; 
+    line-height: 0.8; 
+}
 
-.p-signal { text-align: center; font-weight: 900; font-style: italic; }
-.p-arrow { text-align: right; font-size: 2rem; font-weight: bold; }
+/* Das Design der GHS-Rauten in der HTML-Vorschau */
+.ghs-preview-icon { 
+    width: 36px; 
+    height: 36px; 
+    background: white; 
+    border: 2px solid red; 
+    transform: rotate(45deg); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+}
+.ghs-preview-icon svg { 
+    transform: rotate(-45deg); 
+    width: 75%; 
+    height: 75%; 
+}
 
-/* Farben */
-.c-white { background: #fff; color: #000; border: 1px solid #ddd; }
-.c-yellow { background: #ff0; color: #000; }
-.c-red { background: #f00; color: #fff; }
-.c-brown { background: #8b4513; color: #fff; }
-.c-green { background: #008000; color: #fff; }
-.c-blue { background: #0000ff; color: #fff; }
-.c-violet { background: #800080; color: #fff; }
+/* Hintergrund- und Textfarben der Stoffklassen */
+.bg-white { background-color: #ffffff; color: #000; border: 1px solid #ccc; }
+.bg-yellow { background-color: #ffff00; color: #000; }
+.bg-red { background-color: #ff0000; color: #fff; }
+.bg-brown { background-color: #8b4513; color: #fff; }
+.bg-green { background-color: #008000; color: #fff; }
+.bg-blue { background-color: #0000ff; color: #fff; }
+.bg-violet { background-color: #800080; color: #fff; }
