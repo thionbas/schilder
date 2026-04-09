@@ -1,23 +1,31 @@
 const { jsPDF } = window.jspdf;
 
-// GHS UI Generator (Bilder liegen im Main-Verzeichnis)
+// GHS UI Generator - Angepasst auf ghs_001.png Format
 const ghsPicker = document.getElementById('ghsPicker');
 for (let i = 1; i <= 9; i++) {
-    const id = `0${i}`;
+    // Erstellt "001" statt "01"
+    const id = i.toString().padStart(3, '0'); 
     const fileName = `ghs_${id}.png`; 
     
     const div = document.createElement('div');
     div.className = "flex flex-col items-center p-2 border-2 rounded bg-white hover:border-[#064e3b] transition cursor-pointer";
     div.innerHTML = `
-        <img src="${fileName}" class="w-10 h-10 object-contain mb-1" onerror="this.style.display='none'">
+        <img src="${fileName}" class="w-10 h-10 object-contain mb-1" onerror="this.style.opacity='0.3';">
         <div class="flex items-center gap-1">
             <input type="checkbox" value="${id}" class="ghs-check cursor-pointer">
             <span class="text-[9px] font-bold">GHS ${i}</span>
         </div>
     `;
+    
+    // Klick auf die ganze Kachel zum Auswählen
     div.onclick = (e) => {
         if(e.target.tagName !== 'INPUT') {
             const cb = div.querySelector('input');
+            const selected = document.querySelectorAll('.ghs-check:checked');
+            if(!cb.checked && selected.length >= 5) {
+                alert("Maximal 5 Symbole erlaubt.");
+                return;
+            }
             cb.checked = !cb.checked;
             updatePreview();
         }
@@ -25,7 +33,7 @@ for (let i = 1; i <= 9; i++) {
     ghsPicker.appendChild(div);
 }
 
-// Pfeil-Pfade für Vorschau
+// Pfeil-Pfade für die Live-Vorschau
 const ARROWS = {
     none: '',
     right: '<path d="M10,40 h50 v-20 l40,30 l-40,30 v-20 h-50 z"/>',
@@ -41,25 +49,21 @@ function updatePreview() {
     const signal = document.getElementById('signal').value;
     const arrow = document.getElementById('arrowDir').value;
     
-    // Max 5 GHS Logik
+    // Checkbox Limit prüfen
     const selected = document.querySelectorAll('.ghs-check:checked');
-    if(selected.length > 5) {
-        event.target.checked = false;
-        alert("Maximal 5 Symbole erlaubt.");
-        return;
-    }
 
-    // Text Case
+    // Text Case Formatierung
     if(textCase === 'upper') text = text.toUpperCase();
     else if(textCase === 'lower') text = text.toLowerCase();
 
-    // UI Update
+    // Vorschau Karte aktualisieren
     const card = document.getElementById('previewCard');
     card.className = `label-box bg-${subClass}`;
     document.getElementById('pText').innerText = text;
     document.getElementById('pSignal').innerText = signal;
     document.getElementById('previewArrowSvg').innerHTML = ARROWS[arrow];
 
+    // GHS Symbole in Vorschau anzeigen
     const ghsZone = document.getElementById('pGhs');
     ghsZone.innerHTML = '';
     selected.forEach(cb => {
@@ -68,7 +72,7 @@ function updatePreview() {
         ghsZone.appendChild(img);
     });
 
-    // Auto-Font-Size
+    // Automatische Schriftgröße
     const textEl = document.getElementById('pText');
     let size = 2.8;
     textEl.style.fontSize = size + "rem";
@@ -78,13 +82,13 @@ function updatePreview() {
     }
 }
 
-// Event Listeners
+// Event Listeners für alle Eingabefelder
 document.querySelectorAll('input, select').forEach(el => {
     el.addEventListener('input', updatePreview);
     el.addEventListener('change', updatePreview);
 });
 
-// PDF Drucken
+// PDF Generierung beim Klicken auf den Drucken-Button
 document.getElementById('pdfBtn').onclick = async () => {
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     const subClass = document.getElementById('subClass').value;
@@ -102,39 +106,44 @@ document.getElementById('pdfBtn').onclick = async () => {
         brown:[139,69,19], green:[0,128,0], blue:[0,0,255], violet:[128,0,128] 
     };
 
+    // 12 Etiketten auf dem Bogen platzieren
     for (let i = 0; i < 12; i++) {
         const x = 6.4 + (i % 2 * 99.1);
         const y = 21.6 + (Math.floor(i / 2) * 42.3);
 
-        // Hintergrund (KEIN grauer Rand mehr)
+        // Hintergrundfläche ohne Rand
         doc.setFillColor(...colors[subClass]);
         doc.rect(x, y, 99.1, 42.3, 'F');
         
         const isDark = !['white', 'yellow'].includes(subClass);
         doc.setTextColor(isDark ? 255 : 0);
 
-        // Text
+        // Haupttext zentriert
         doc.setFontSize(26);
         doc.setFont("helvetica", "bold");
         doc.text(text, x + 49.5, y + 18, { align: 'center', maxWidth: 90 });
 
-        // Signalwort
+        // Signalwort platzieren
         doc.setFontSize(14);
         doc.setFont("helvetica", "bolditalic");
         doc.text(signal, x + 55, y + 36, { align: 'center' });
 
-        // GHS Bilder
+        // GHS Bilder einfügen
         for(let g = 0; g < selectedGhs.length; g++) {
-            const gImg = `ghs_${selectedGhs[g]}.png`;
+            const fileName = `ghs_${selectedGhs[g]}.png`;
             try {
-                doc.addImage(gImg, 'PNG', x + 5 + (g * 11), y + 29, 9, 9);
-            } catch(e) {}
+                // Bilder werden direkt aus dem Hauptverzeichnis geladen
+                doc.addImage(fileName, 'PNG', x + 5 + (g * 11), y + 29, 9, 9);
+            } catch(e) {
+                console.error("Konnte Bild nicht laden:", fileName);
+            }
         }
 
-        // Spitzer Pfeil
+        // Pfeil zeichnen (Schaft + Dreieck für scharfe Spitze)
         if(arrow !== 'none') {
             doc.setFillColor(isDark ? 255 : 0);
-            const ax = x + 85; const ay = y + 34;
+            const ax = x + 85; 
+            const ay = y + 34;
             if(arrow === 'right') {
                 doc.rect(ax-4, ay-1.5, 6, 3, 'F');
                 doc.triangle(ax+2, ay-4, ax+2, ay+4, ax+7, ay, 'F');
@@ -150,8 +159,8 @@ document.getElementById('pdfBtn').onclick = async () => {
             }
         }
     }
-    doc.save("Etiketten_AP_Schilder.pdf");
+    doc.save("AP_Schilder_Druckbogen.pdf");
 };
 
-// Start
+// Initialer Aufruf
 updatePreview();
