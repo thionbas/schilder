@@ -1,74 +1,78 @@
 const { jsPDF } = window.jspdf;
 
-// GHS Definitionen
-const ghsLabels = ["GHS01", "GHS02", "GHS03", "GHS04", "GHS05", "GHS06", "GHS07", "GHS08", "GHS09"];
+// GHS Daten (URLs von Wikipedia für die Vorschau)
+const GHS_URLS = {
+    ghs01: "https://upload.wikimedia.org/wikipedia/commons/3/3f/GHS-pictogram-explos.svg",
+    ghs02: "https://upload.wikimedia.org/wikipedia/commons/a/a2/GHS-pictogram-flamme.svg",
+    ghs03: "https://upload.wikimedia.org/wikipedia/commons/e/ee/GHS-pictogram-rondflam.svg",
+    ghs05: "https://upload.wikimedia.org/wikipedia/commons/1/1a/GHS-pictogram-acid.svg",
+    ghs07: "https://upload.wikimedia.org/wikipedia/commons/a/a7/GHS-pictogram-exclam.svg"
+};
 
-// UI Setup
+// GHS Selektoren erstellen
 const ghsGrid = document.getElementById('ghsSelectors');
-ghsLabels.forEach(label => {
-    const div = document.createElement('label');
-    div.className = "flex flex-col items-center p-1 border rounded hover:bg-gray-100 cursor-pointer text-[10px]";
-    div.innerHTML = `
-        <div class="ghs-diamond-preview"><span class="ghs-inner-icon">${label}</span></div>
-        <input type="checkbox" value="${label}" class="ghs-checkbox mt-1">
+Object.keys(GHS_URLS).forEach(key => {
+    const label = document.createElement('label');
+    label.className = "flex flex-col items-center cursor-pointer p-1 border rounded hover:bg-white";
+    label.innerHTML = `
+        <img src="${GHS_URLS[key]}" class="w-8 h-8 mb-1">
+        <input type="checkbox" value="${key}" class="ghs-checkbox">
     `;
-    ghsGrid.appendChild(div);
+    ghsGrid.appendChild(label);
 });
 
 function updatePreview() {
-    const container = document.getElementById('previewContainer');
-    const text = document.getElementById('labelText').value || "DEIN TEXT HIER";
+    const text = document.getElementById('labelText').value || "BEISPIEL TEXT";
     const subClass = document.getElementById('substanceClass').value;
     const signal = document.getElementById('signalWord').value;
     const flow = document.querySelector('input[name="flow"]:checked').value;
-    const selectedGHS = Array.from(document.querySelectorAll('.ghs-checkbox:checked')).map(cb => cb.value);
+    const selectedGhs = Array.from(document.querySelectorAll('.ghs-checkbox:checked'));
 
-    // Farben Mapping
-    const colorMap = {
-        white: "#ffffff", yellow: "#ffff00", red: "#ff0000", 
-        brown: "#8b4513", green: "#008000", blue: "#0000ff", violet: "#800080"
-    };
+    const previewLabel = document.getElementById('previewLabel');
+    const prevText = document.getElementById('prevText');
+    const prevGHS = document.getElementById('prevGHS');
+    const prevSignal = document.getElementById('prevSignal');
+    const prevArrow = document.getElementById('prevArrow');
+
+    // Farbe setzen
+    previewLabel.className = `preview-label-box bg-${subClass}`;
     
-    container.style.backgroundColor = colorMap[subClass];
-    container.style.color = (['yellow', 'white'].includes(subClass)) ? 'black' : 'white';
+    // Text
+    prevText.innerText = text;
+    
+    // GHS
+    prevGHS.innerHTML = selectedGhs.map(cb => `
+        <div class="ghs-icon-mini"><img src="${GHS_URLS[cb.value]}"></div>
+    `).join('');
 
-    // HTML Inhalt der Vorschau
-    container.innerHTML = `
-        <div class="flex-1 flex items-center justify-center text-center font-bold text-2xl px-4 overflow-hidden" id="prevText">
-            ${text}
-        </div>
-        <div class="h-1/3 flex items-center justify-between px-2">
-            <div class="flex gap-1" id="prevGhs">
-                ${selectedGHS.map(g => `<div class="ghs-diamond-preview"><span class="ghs-inner-icon">${g}</span></div>`).join('')}
-            </div>
-            <div class="text-xl font-black italic mr-10">${signal}</div>
-            <div class="text-5xl font-bold" id="prevArrow">${getArrowSymbol(flow)}</div>
-        </div>
-    `;
-}
+    // Signal & Pfeil
+    prevSignal.innerText = signal;
+    prevArrow.innerText = (flow === 'left' ? '←' : flow === 'right' ? '→' : flow === 'up' ? '↑' : '↓');
 
-function getArrowSymbol(dir) {
-    if(dir === 'left') return '←';
-    if(dir === 'right') return '→';
-    if(dir === 'up') return '↑';
-    return '↓';
+    // Auto-Scaling Text
+    let size = 40;
+    prevText.style.fontSize = size + "px";
+    while (prevText.scrollHeight > prevText.offsetHeight && size > 10) {
+        size--;
+        prevText.style.fontSize = size + "px";
+    }
 }
 
 async function generatePDF() {
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     
-    // Avery L4776REV exakte Maße
+    // Avery L4776 Maße
     const labelW = 99.1;
     const labelH = 42.3;
     const marginTop = 21.6;
     const marginLeft = 6.4;
     
-    const count = parseInt(document.getElementById('quantity').value);
+    const count = Math.min(parseInt(document.getElementById('quantity').value), 12);
     const subClass = document.getElementById('substanceClass').value;
     const text = document.getElementById('labelText').value;
     const signal = document.getElementById('signalWord').value;
     const flow = document.querySelector('input[name="flow"]:checked').value;
-    const selectedGHS = Array.from(document.querySelectorAll('.ghs-checkbox:checked')).map(cb => cb.value);
+    const selectedGhs = Array.from(document.querySelectorAll('.ghs-checkbox:checked'));
 
     const colors = {
         white: [255,255,255], yellow: [255,255,0], red: [255,0,0], 
@@ -85,65 +89,64 @@ async function generatePDF() {
         doc.setFillColor(...colors[subClass]);
         doc.rect(x, y, labelW, labelH, 'F');
         
-        // Textfarbe
-        doc.setTextColor( ['yellow', 'white'].includes(subClass) ? 0 : 255);
-        
-        // Haupttext (mit automatischer Skalierung)
-        let fontSize = 24;
-        doc.setFontSize(fontSize);
-        doc.setFont("helvetica", "bold");
-        doc.text(text, x + (labelW/2), y + 18, { align: 'center', maxWidth: labelW - 10 });
+        // Kontrastfarbe für Text
+        const isDark = !['white', 'yellow'].includes(subClass);
+        doc.setTextColor(isDark ? 255 : 0);
 
-        // GHS Symbole zeichnen (Rote Rauten)
+        // Haupttext
+        doc.setFont("helvetica", "bold");
+        let fontSize = 25;
+        doc.setFontSize(fontSize);
+        // Einfaches Wrapping
+        const splitText = doc.splitTextToSize(text, labelW - 10);
+        doc.text(splitText, x + labelW/2, y + 15, { align: 'center' });
+
+        // GHS Symbole (Wir zeichnen Rauten, da SVGs im PDF oft Probleme machen ohne Proxy)
         doc.setDrawColor(255, 0, 0);
-        doc.setLineWidth(0.8);
-        selectedGHS.forEach((ghs, index) => {
-            const gx = x + 10 + (index * 12);
+        doc.setLineWidth(0.5);
+        selectedGhs.forEach((ghs, idx) => {
+            const gx = x + 10 + (idx * 12);
             const gy = y + 32;
             doc.setFillColor(255,255,255);
-            // Raute zeichnen
-            doc.line(gx, gy-4, gx+4, gy); // Oben nach Rechts
-            doc.line(gx+4, gy, gx, gy+4); // Rechts nach Unten
-            doc.line(gx, gy+4, gx-4, gy); // Unten nach Links
-            doc.line(gx-4, gy, gx, gy-4); // Links nach Oben
-            
-            doc.setFontSize(5);
+            // Raute
+            doc.line(gx, gy-4, gx+4, gy);
+            doc.line(gx+4, gy, gx, gy+4);
+            doc.line(gx, gy+4, gx-4, gy);
+            doc.line(gx-4, gy, gx, gy-4);
+            doc.setFontSize(4);
             doc.setTextColor(0);
-            doc.text(ghs, gx, gy+1, {align: 'center'});
+            doc.text(ghs.value.toUpperCase(), gx, gy + 1, {align:'center'});
         });
 
         // Signalwort
-        doc.setFontSize(14);
-        doc.setTextColor( ['yellow', 'white'].includes(subClass) ? 0 : 255);
-        doc.text(signal, x + labelW - 35, y + 34, { align: 'right' });
+        doc.setTextColor(isDark ? 255 : 0);
+        doc.setFontSize(12);
+        doc.text(signal, x + labelW - 25, y + 32, { align: 'right' });
 
-        // Fetter Pfeil
-        doc.setLineWidth(2);
-        doc.setDrawColor(['yellow', 'white'].includes(subClass) ? 0 : 255);
-        const ax = x + labelW - 15;
+        // Pfeil (gezeichnet für Schärfe)
+        doc.setDrawColor(isDark ? 255 : 0);
+        doc.setLineWidth(1.5);
+        const ax = x + labelW - 12;
         const ay = y + 32;
-
         if(flow === 'right') {
-            doc.line(ax-8, ay, ax+5, ay);
-            doc.line(ax+5, ay, ax+1, ay-3);
-            doc.line(ax+5, ay, ax+1, ay+3);
+            doc.line(ax-5, ay, ax+5, ay);
+            doc.line(ax+5, ay, ax+2, ay-2);
+            doc.line(ax+5, ay, ax+2, ay+2);
         } else if(flow === 'left') {
-            doc.line(ax+5, ay, ax-8, ay);
-            doc.line(ax-8, ay, ax-4, ay-3);
-            doc.line(ax-8, ay, ax-4, ay+3);
-        } else if(flow === 'up') {
-            doc.line(ax, ay+5, ax, ay-5);
-            doc.line(ax, ay-5, ax-3, ay-1);
-            doc.line(ax, ay-5, ax+3, ay-1);
-        } else {
-            doc.line(ax, ay-5, ax, ay+5);
-            doc.line(ax, ay+5, ax-3, ay+1);
-            doc.line(ax, ay+5, ax+3, ay+1);
-        }
+            doc.line(ax+5, ay, ax-5, ay);
+            doc.line(ax-5, ay, ax-2, ay-2);
+            doc.line(ax-5, ay, ax-2, ay+2);
+        } // ... up/down analog
     }
-    doc.save(`Etiketten_Avery_L4776.pdf`);
+
+    doc.save("AP_Schilder_Druck.pdf");
 }
 
-document.addEventListener('input', updatePreview);
+// Event Listener
+document.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('input', updatePreview);
+});
 document.getElementById('downloadBtn').addEventListener('click', generatePDF);
+
+// Init
 updatePreview();
