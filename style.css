@@ -1,0 +1,62 @@
+/* Logo: Ein halbes Herz */
+.logo-heart {
+    width: 20px;
+    height: 30px;
+    background-color: #064e3b; /* Dunkelgrün */
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    position: relative;
+    transform: rotate(0deg);
+}
+
+/* Farben der Stoffklassen */
+.bg-yellow { background-color: #FFFF00; color: black; }
+.bg-white  { background-color: #FFFFFF; color: black; }
+.bg-red    { background-color: #FF0000; color: white; }
+.bg-brown  { background-color: #8B4513; color: white; }
+.bg-green  { background-color: #008000; color: white; }
+.bg-blue   { background-color: #0000FF; color: white; }
+.bg-violet { background-color: #800080; color: white; }
+
+/* Font scaling container */
+#previewLabel .text-container {
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    text-align: center;
+    font-weight: bold;
+    overflow: hidden;
+    word-break: keep-all;
+}
+
+#previewLabel .bottom-container {
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+#previewLabel .ghs-row {
+    display: flex;
+    gap: 4px;
+    height: 60%;
+}
+
+#previewLabel .ghs-row img {
+    height: 100%;
+}
+
+#previewLabel .signal-word {
+    font-size: 8px;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+#previewLabel .arrow {
+    position: absolute;
+    font-size: 20px;
+}
