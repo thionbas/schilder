@@ -1,62 +1,113 @@
-/* Logo: Ein halbes Herz */
-.logo-heart {
-    width: 20px;
+/* --- Logo: Halbes Herz (gerade zerteilt) --- */
+.logo-heart-container {
+    width: 26px;
     height: 30px;
-    background-color: #064e3b; /* Dunkelgrün */
-    border-top-left-radius: 20px;
-    border-bottom-left-radius: 20px;
     position: relative;
-    transform: rotate(0deg);
+    overflow: hidden; /* Schneidet die rechte Hälfte ab */
+}
+
+.heart-half {
+    width: 30px; /* Volle Breite des ursprünglichen Herzens */
+    height: 30px;
+    position: absolute;
+    left: 0;
+}
+
+/* Erstellt ein Herz mit Pseudo-Elementen */
+.heart-half::before,
+.heart-half::after {
+    content: "";
+    background-color: #064e3b; /* Dunkelgrün */
+    border-radius: 50% 50% 0 0;
+    position: absolute;
+    width: 15px;
+    height: 25px;
+}
+
+.heart-half::before {
+    left: 15px;
+    transform: rotate(-45deg);
+    transform-origin: 0 100%;
+}
+
+.heart-half::after {
+    left: 0;
+    transform: rotate(45deg);
+    transform-origin: 100% 100%;
+}
+
+
+/* --- Vorschau-Etikett Styles (Web) --- */
+.preview-label-base {
+    /* Avery Formatverhältnis 991:423 */
+    width: 100%;
+    padding-bottom: 42.68%; /* Aspect Ratio Hack */
+    height: 0;
 }
 
 /* Farben der Stoffklassen */
-.bg-yellow { background-color: #FFFF00; color: black; }
-.bg-white  { background-color: #FFFFFF; color: black; }
-.bg-red    { background-color: #FF0000; color: white; }
-.bg-brown  { background-color: #8B4513; color: white; }
-.bg-green  { background-color: #008000; color: white; }
-.bg-blue   { background-color: #0000FF; color: white; }
-.bg-violet { background-color: #800080; color: white; }
+.bg-substance-yellow { background-color: #FFFF00; color: black !important; }
+.bg-substance-white  { background-color: #FFFFFF; color: black !important; border: 1px solid #ccc; }
+.bg-substance-red    { background-color: #FF0000; color: white !important; }
+.bg-substance-brown  { background-color: #8B4513; color: white !important; }
+.bg-substance-green  { background-color: #008000; color: white !important; }
+.bg-substance-blue   { background-color: #0000FF; color: white !important; }
+.bg-substance-violet { background-color: #800080; color: white !important; }
 
-/* Font scaling container */
-#previewLabel .text-container {
+/* Inhalt des Vorschau-Etiketts */
+.preview-content {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 2% 4%;
+}
+
+/* Obere Hälfte: Text */
+.label-text-container {
     height: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 5px;
     text-align: center;
     font-weight: bold;
     overflow: hidden;
-    word-break: keep-all;
+    line-height: 1.1;
+    white-space: normal;
 }
 
-#previewLabel .bottom-container {
+/* Untere Hälfte: GHS, Signal, Pfeil */
+.label-bottom-container {
     height: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
+    padding-top: 1%;
 }
 
-#previewLabel .ghs-row {
+.ghs-row-preview {
     display: flex;
-    gap: 4px;
+    gap: 3px;
     height: 60%;
+    justify-content: center;
 }
 
-#previewLabel .ghs-row img {
+.ghs-row-preview img {
     height: 100%;
+    width: auto;
 }
 
-#previewLabel .signal-word {
-    font-size: 8px;
+.signal-word-preview {
+    font-size: 1.2cqw; /* Relative Schriftgröße */
     font-weight: bold;
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
-#previewLabel .arrow {
+/* Pfeil in der Vorschau (vereinfacht) */
+.arrow-preview {
     position: absolute;
-    font-size: 20px;
+    font-weight: bold;
+    color: currentColor;
 }
