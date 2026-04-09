@@ -1,15 +1,12 @@
-/* Das halbe Herz Logo */
-.half-heart-logo {
+/* Logo: Exakt halbes Herz */
+.half-heart {
     width: 20px;
     height: 35px;
     background-color: #064e3b;
+    border-radius: 20px 0 0 20px;
     position: relative;
-    /* Wir nutzen clip-path um ein Herz zu simulieren und halbieren es */
-    border-radius: 20px 20px 0 0;
-    transform: rotate(0deg);
 }
-
-.half-heart-logo::after {
+.half-heart::after {
     content: '';
     position: absolute;
     width: 20px;
@@ -20,83 +17,59 @@
     clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 
-/* Vorschau Box (Maßstabsgetreu 99.1 x 42.3) */
-#previewContainer {
+/* Vorschau: 99.1mm x 42.3mm im Verhältnis */
+.preview-container {
     width: 100%;
-    max-width: 450px;
-    aspect-ratio: 99.1 / 42.3;
-    background-color: #eee;
-    padding: 2px; /* Simulierter Rand */
+    max-width: 480px;
+    aspect-ratio: 991 / 423;
+    background: #ccc;
+    padding: 1px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-.preview-label-box {
+.preview-card {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 15px;
+    padding: 12px;
     box-sizing: border-box;
-    position: relative;
-    transition: all 0.3s ease;
 }
 
-.label-text-content {
+.p-text {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 2.5rem;
     font-weight: 900;
     text-align: center;
-    line-height: 1.1;
-    word-break: break-word;
-    font-size: 2rem;
+    text-transform: uppercase;
 }
 
-.label-footer {
-    height: 30%;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-}
-
-.ghs-container-preview {
-    display: flex;
-    gap: 5px;
-}
-
-.ghs-icon-mini {
-    width: 30px;
-    height: 30px;
-    background: white;
-    border: 1.5px solid red;
-    transform: rotate(45deg);
-    display: flex;
+.p-footer {
+    height: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* Verhindert Überlappung */
     align-items: center;
-    justify-content: center;
-    overflow: hidden;
 }
 
-.ghs-icon-mini img {
-    transform: rotate(-45deg);
-    width: 80%;
+.p-ghs-box { display: flex; gap: 4px; }
+.ghs-mini {
+    width: 30px; height: 30px; border: 2px solid red; 
+    transform: rotate(45deg); background: white;
+    display: flex; align-items: center; justify-content: center;
 }
+.ghs-mini span { transform: rotate(-45deg); font-size: 6px; font-weight: bold; color: black; }
 
-.signal-text-preview {
-    font-weight: 900;
-    font-style: italic;
-    font-size: 1.2rem;
-}
+.p-signal { text-align: center; font-weight: 900; font-style: italic; }
+.p-arrow { text-align: right; font-size: 2rem; font-weight: bold; }
 
-.arrow-preview {
-    font-size: 2.5rem;
-    font-weight: bold;
-}
-
-/* Stofffarben */
-.bg-white { background-color: #ffffff; color: #000; border: 1px solid #ddd; }
-.bg-yellow { background-color: #ffff00; color: #000; }
-.bg-red { background-color: #ff0000; color: #fff; }
-.bg-brown { background-color: #8b4513; color: #fff; }
-.bg-green { background-color: #008000; color: #fff; }
-.bg-blue { background-color: #0000ff; color: #fff; }
-.bg-violet { background-color: #800080; color: #fff; }
+/* Farben */
+.c-white { background: #fff; color: #000; border: 1px solid #ddd; }
+.c-yellow { background: #ff0; color: #000; }
+.c-red { background: #f00; color: #fff; }
+.c-brown { background: #8b4513; color: #fff; }
+.c-green { background: #008000; color: #fff; }
+.c-blue { background: #0000ff; color: #fff; }
+.c-violet { background: #800080; color: #fff; }
