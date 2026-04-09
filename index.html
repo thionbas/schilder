@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP SCHILDER - Etiketten Konfigurator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-white text-gray-800 font-sans">
+
+    <header class="bg-white border-b-4 border-green-900 p-4 flex items-center shadow-md">
+        <div class="logo-heart mr-3"></div>
+        <h1 class="text-3xl font-bold text-green-900 tracking-tight">AP SCHILDER</h1>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <section class="bg-gray-50 p-6 rounded-lg border border-green-100 shadow-sm">
+                <h2 class="text-xl font-semibold mb-4 text-green-800">Konfiguration</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium">Stoffklasse (Farbe)</label>
+                        <select id="substanceClass" class="w-full p-2 border rounded">
+                            <option value="white">Hinweisschild (Weiß)</option>
+                            <option value="yellow">Stickstoff / Gase (Gelb)</option>
+                            <option value="red">Dampf (Rot)</option>
+                            <option value="brown">Chemischer Stoff (Braun)</option>
+                            <option value="green">Wasser (Grün)</option>
+                            <option value="blue">Luft (Blau)</option>
+                            <option value="violet">Säure / Lauge (Violett)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Etiketten-Text</label>
+                        <input type="text" id="labelHeading" placeholder="z.B. Schwefelsäure" class="w-full p-2 border rounded">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Flussrichtung</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label><input type="radio" name="direction" value="left"> Links</label>
+                            <label><input type="radio" name="direction" value="right" checked> Rechts</label>
+                            <label><input type="radio" name="direction" value="up"> Oben</label>
+                            <label><input type="radio" name="direction" value="down"> Unten</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">GHS Symbole (Mehrfachauswahl)</label>
+                        <div class="grid grid-cols-3 gap-2 mt-2" id="ghsContainer">
+                            <label class="text-xs flex flex-col items-center">
+                                <input type="checkbox" value="ghs01"> <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/GHS-pictogram-explos.svg" class="w-8 h-8"> 01
+                            </label>
+                            <label class="text-xs flex flex-col items-center">
+                                <input type="checkbox" value="ghs02"> <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/GHS-pictogram-flamme.svg" class="w-8 h-8"> 02
+                            </label>
+                            <label class="text-xs flex flex-col items-center">
+                                <input type="checkbox" value="ghs03"> <img src="https://upload.wikimedia.org/wikipedia/commons/e/ee/GHS-pictogram-rondflam.svg" class="w-8 h-8"> 03
+                            </label>
+                            <label class="text-xs flex flex-col items-center">
+                                <input type="checkbox" value="ghs05"> <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/GHS-pictogram-acid.svg" class="w-8 h-8"> 05
+                            </label>
+                            <label class="text-xs flex flex-col items-center">
+                                <input type="checkbox" value="ghs06"> <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/GHS-pictogram-skull.svg" class="w-8 h-8"> 06
+                            </label>
+                            <label class="text-xs flex flex-col items-center">
+                                <input type="checkbox" value="ghs07"> <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/GHS-pictogram-exclam.svg" class="w-8 h-8"> 07
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Signalwort</label>
+                        <select id="signalWord" class="w-full p-2 border rounded">
+                            <option value="">Keines</option>
+                            <option value="GEFAHR">GEFAHR</option>
+                            <option value="ACHTUNG">ACHTUNG</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Anzahl (max. 12)</label>
+                        <input type="number" id="quantity" min="1" max="12" value="1" class="w-full p-2 border rounded">
+                    </div>
+
+                    <button id="generateBtn" class="w-full bg-green-900 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition">
+                        Etiketten-PDF generieren
+                    </button>
+                </div>
+            </section>
+
+            <section class="border-2 border-dashed border-gray-300 p-4 flex flex-col items-center justify-center bg-gray-50 rounded-lg">
+                <h2 class="text-sm uppercase text-gray-400 mb-4">Live-Vorschau (Einzeletikett)</h2>
+                <div id="previewLabel" class="w-full aspect-[991/423] border border-gray-400 shadow-lg relative overflow-hidden flex flex-col">
+                    </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
