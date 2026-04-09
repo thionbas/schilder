@@ -1,63 +1,102 @@
-/* Das halbe Herz: Exakt vertikal geteilt */
-.logo-container {
-    width: 20px; /* Nur die halbe Breite */
-    height: 40px;
-    position: relative;
-    overflow: hidden;
-    margin-right: 15px;
-}
-
-.heart-full {
-    width: 40px;
-    height: 40px;
+/* Das halbe Herz Logo */
+.half-heart-logo {
+    width: 20px;
+    height: 35px;
     background-color: #064e3b;
     position: relative;
-    transform: rotate(-45deg);
-    transform-origin: center;
-    left: 0; /* Positioniert, dass nur die linke Hälfte im Container sichtbar ist */
+    /* Wir nutzen clip-path um ein Herz zu simulieren und halbieren es */
+    border-radius: 20px 20px 0 0;
+    transform: rotate(0deg);
 }
 
-.heart-full::before,
-.heart-full::after {
-    content: "";
-    width: 40px;
-    height: 40px;
-    background-color: #064e3b;
-    border-radius: 50%;
+.half-heart-logo::after {
+    content: '';
     position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #064e3b;
+    bottom: -10px;
+    left: 0;
+    clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 
-.heart-full::before { top: -20px; left: 0; }
-.heart-full::after { left: 20px; top: 0; }
-
-/* Vorschau-Styles */
+/* Vorschau Box (Maßstabsgetreu 99.1 x 42.3) */
 #previewContainer {
     width: 100%;
-    max-width: 495px; /* Maßstäblich zu 99.1mm */
-    aspect-ratio: 991 / 423;
+    max-width: 450px;
+    aspect-ratio: 99.1 / 42.3;
+    background-color: #eee;
+    padding: 2px; /* Simulierter Rand */
+}
+
+.preview-label-box {
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     padding: 15px;
     box-sizing: border-box;
-    border: 1px solid #ddd;
     position: relative;
+    transition: all 0.3s ease;
 }
 
-.ghs-diamond-preview {
-    width: 35px;
-    height: 35px;
-    border: 2px solid red;
+.label-text-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.1;
+    word-break: break-word;
+    font-size: 2rem;
+}
+
+.label-footer {
+    height: 30%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.ghs-container-preview {
+    display: flex;
+    gap: 5px;
+}
+
+.ghs-icon-mini {
+    width: 30px;
+    height: 30px;
+    background: white;
+    border: 1.5px solid red;
     transform: rotate(45deg);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
-    margin: 5px;
+    overflow: hidden;
 }
 
-.ghs-inner-icon {
+.ghs-icon-mini img {
     transform: rotate(-45deg);
-    font-size: 10px;
-    font-weight: bold;
-    color: black;
+    width: 80%;
 }
+
+.signal-text-preview {
+    font-weight: 900;
+    font-style: italic;
+    font-size: 1.2rem;
+}
+
+.arrow-preview {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+/* Stofffarben */
+.bg-white { background-color: #ffffff; color: #000; border: 1px solid #ddd; }
+.bg-yellow { background-color: #ffff00; color: #000; }
+.bg-red { background-color: #ff0000; color: #fff; }
+.bg-brown { background-color: #8b4513; color: #fff; }
+.bg-green { background-color: #008000; color: #fff; }
+.bg-blue { background-color: #0000ff; color: #fff; }
+.bg-violet { background-color: #800080; color: #fff; }
