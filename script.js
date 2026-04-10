@@ -48,7 +48,11 @@ function updatePreview() {
     const textCase = document.getElementById('textCase').value;
     const signal = document.getElementById('signal').value;
     const arrow = document.getElementById('arrowDir').value;
+    const textSize = document.getElementById('textSize').value;
     
+    // Update des Schriftgrößen-Zahlenwerts im Label
+    document.getElementById('textSizeDisplay').innerText = textSize;
+
     // Checkbox Limit prüfen
     const selected = document.querySelectorAll('.ghs-check:checked');
 
@@ -72,17 +76,12 @@ function updatePreview() {
         ghsZone.appendChild(img);
     });
 
-    // Automatische Schriftgröße
+    // Manuelle Schriftgröße anwenden (Wert durch 10 geteilt für rem Umrechnung)
     const textEl = document.getElementById('pText');
-    let size = 2.8;
-    textEl.style.fontSize = size + "rem";
-    while (textEl.scrollHeight > textEl.offsetHeight && size > 1) {
-        size -= 0.1;
-        textEl.style.fontSize = size + "rem";
-    }
+    textEl.style.fontSize = (textSize / 10) + "rem";
 }
 
-// Event Listeners für alle Eingabefelder
+// Event Listeners für alle Eingabefelder (inklusive Slider)
 document.querySelectorAll('input, select').forEach(el => {
     el.addEventListener('input', updatePreview);
     el.addEventListener('change', updatePreview);
@@ -96,6 +95,7 @@ document.getElementById('pdfBtn').onclick = async () => {
     const textCase = document.getElementById('textCase').value;
     const signal = document.getElementById('signal').value;
     const arrow = document.getElementById('arrowDir').value;
+    const textSize = parseInt(document.getElementById('textSize').value);
     const selectedGhs = Array.from(document.querySelectorAll('.ghs-check:checked')).map(cb => cb.value);
 
     if(textCase === 'upper') text = text.toUpperCase();
@@ -118,15 +118,15 @@ document.getElementById('pdfBtn').onclick = async () => {
         const isDark = !['white', 'yellow'].includes(subClass);
         doc.setTextColor(isDark ? 255 : 0);
 
-        // Haupttext zentriert
-        doc.setFontSize(26);
+        // Haupttext zentriert mit dynamischer Schriftgröße
+        doc.setFontSize(textSize);
         doc.setFont("helvetica", "bold");
         doc.text(text, x + 49.5, y + 18, { align: 'center', maxWidth: 90 });
 
-        // Signalwort platzieren
-        doc.setFontSize(14);
+        // Signalwort platzieren (verkleinert auf 10, nach rechts verschoben auf X=70)
+        doc.setFontSize(10);
         doc.setFont("helvetica", "bolditalic");
-        doc.text(signal, x + 55, y + 36, { align: 'center' });
+        doc.text(signal, x + 70, y + 36, { align: 'center' });
 
         // GHS Bilder einfügen
         for(let g = 0; g < selectedGhs.length; g++) {
