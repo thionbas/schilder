@@ -1,4 +1,3 @@
-/* Vorschau Maßstab */
 .preview-wrapper {
     width: 100%;
     max-width: 500px;
@@ -11,7 +10,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 15px 20px;
+    padding: 10px 15px;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -23,44 +22,44 @@
     justify-content: center;
     font-weight: 900;
     text-align: center;
-    line-height: 1.1;
-    font-size: 2.6rem; /* Standardwert für den Start */
+    line-height: 1.0;
 }
 
 .label-bottom {
-    height: 38%;
-    display: grid;
-    grid-template-columns: 2fr 1fr 0.8fr;
+    height: 35%;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
 }
 
 .ghs-zone { 
     display: flex; 
-    gap: 4px; 
+    gap: 3px; 
     align-items: center; 
+    width: 55%;
 }
 
 .ghs-zone img {
-    height: 35px;
-    width: 35px;
+    height: 32px;
+    width: 32px;
     object-fit: contain;
 }
 
-/* Signalwort verkleinert (vorher 1.2rem) */
 .signal-zone { 
     text-align: center; 
     font-weight: 900; 
     font-style: italic; 
-    font-size: 0.85rem; 
+    font-size: 0.85rem;
+    width: 25%;
 }
 
 .arrow-zone { 
     display: flex;
     justify-content: flex-end;
-    height: 80%;
+    width: 15%;
+    height: 70%;
 }
 
-/* Stoffklassen Farben */
 .bg-white { background-color: #ffffff; color: #000; border: 1px solid #ddd; }
 .bg-yellow { background-color: #ffff00; color: #000; }
 .bg-red { background-color: #ff0000; color: #fff; }
