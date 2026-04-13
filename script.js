@@ -1,9 +1,8 @@
 const { jsPDF } = window.jspdf;
 
-// GHS UI Generator - Angepasst auf ghs_001.png Format
+// GHS UI Generator
 const ghsPicker = document.getElementById('ghsPicker');
 for (let i = 1; i <= 9; i++) {
-    // Erstellt "001" statt "01"
     const id = i.toString().padStart(3, '0'); 
     const fileName = `ghs_${id}.png`; 
     
@@ -17,7 +16,6 @@ for (let i = 1; i <= 9; i++) {
         </div>
     `;
     
-    // Klick auf die ganze Kachel zum Auswählen
     div.onclick = (e) => {
         if(e.target.tagName !== 'INPUT') {
             const cb = div.querySelector('input');
@@ -33,7 +31,6 @@ for (let i = 1; i <= 9; i++) {
     ghsPicker.appendChild(div);
 }
 
-// Pfeil-Pfade für die Live-Vorschau
 const ARROWS = {
     none: '',
     right: '<path d="M10,40 h50 v-20 l40,30 l-40,30 v-20 h-50 z"/>',
@@ -48,55 +45,46 @@ function updatePreview() {
     const textCase = document.getElementById('textCase').value;
     const signal = document.getElementById('signal').value;
     const arrow = document.getElementById('arrowDir').value;
-    const textSize = document.getElementById('textSize').value;
+    const fontSize = document.getElementById('textSize').value;
     
-    // Update des Schriftgrößen-Zahlenwerts im Label
-    document.getElementById('textSizeDisplay').innerText = textSize;
+    document.getElementById('fontSizeVal').innerText = fontSize;
 
-    // Checkbox Limit prüfen
-    const selected = document.querySelectorAll('.ghs-check:checked');
-
-    // Text Case Formatierung
     if(textCase === 'upper') text = text.toUpperCase();
     else if(textCase === 'lower') text = text.toLowerCase();
 
-    // Vorschau Karte aktualisieren
     const card = document.getElementById('previewCard');
     card.className = `label-box bg-${subClass}`;
     document.getElementById('pText').innerText = text;
     document.getElementById('pSignal').innerText = signal;
     document.getElementById('previewArrowSvg').innerHTML = ARROWS[arrow];
 
-    // GHS Symbole in Vorschau anzeigen
+    const textEl = document.getElementById('pText');
+    textEl.style.fontSize = (fontSize / 10) + "rem";
+
     const ghsZone = document.getElementById('pGhs');
     ghsZone.innerHTML = '';
-    selected.forEach(cb => {
+    document.querySelectorAll('.ghs-check:checked').forEach(cb => {
         const img = document.createElement('img');
         img.src = `ghs_${cb.value}.png`;
         ghsZone.appendChild(img);
     });
-
-    // Manuelle Schriftgröße anwenden (Wert durch 10 geteilt für rem Umrechnung)
-    const textEl = document.getElementById('pText');
-    textEl.style.fontSize = (textSize / 10) + "rem";
 }
 
-// Event Listeners für alle Eingabefelder (inklusive Slider)
-document.querySelectorAll('input, select').forEach(el => {
-    el.addEventListener('input', updatePreview);
-    el.addEventListener('change', updatePreview);
-});
+document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updatePreview));
 
-// PDF Generierung beim Klicken auf den Drucken-Button
-document.getElementById('pdfBtn').onclick = async () => {
+document.getElementById('pdfBtn').onclick = () => {
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     const subClass = document.getElementById('subClass').value;
     let text = document.getElementById('mainText').value || "TEXT";
     const textCase = document.getElementById('textCase').value;
     const signal = document.getElementById('signal').value;
     const arrow = document.getElementById('arrowDir').value;
-    const textSize = parseInt(document.getElementById('textSize').value);
+    const fontSize = parseInt(document.getElementById('textSize').value);
     const selectedGhs = Array.from(document.querySelectorAll('.ghs-check:checked')).map(cb => cb.value);
+
+    // NEU: Startposition und Anzahl lesen
+    const startPos = parseInt(document.getElementById('startPos').value) || 1;
+    const printCount = parseInt(document.getElementById('printCount').value) || 12;
 
     if(textCase === 'upper') text = text.toUpperCase();
     else if(textCase === 'lower') text = text.toLowerCase();
@@ -106,61 +94,44 @@ document.getElementById('pdfBtn').onclick = async () => {
         brown:[139,69,19], green:[0,128,0], blue:[0,0,255], violet:[128,0,128] 
     };
 
-    // 12 Etiketten auf dem Bogen platzieren
-    for (let i = 0; i < 12; i++) {
+    // Berechnung des Druckbereichs
+    const startIdx = startPos - 1; // 0-basiert
+    const endIdx = Math.min(startIdx + printCount, 12); // Nicht über 12 hinausgehen
+
+    for (let i = startIdx; i < endIdx; i++) {
         const x = 6.4 + (i % 2 * 99.1);
         const y = 21.6 + (Math.floor(i / 2) * 42.3);
 
-        // Hintergrundfläche ohne Rand
         doc.setFillColor(...colors[subClass]);
         doc.rect(x, y, 99.1, 42.3, 'F');
         
         const isDark = !['white', 'yellow'].includes(subClass);
         doc.setTextColor(isDark ? 255 : 0);
 
-        // Haupttext zentriert mit dynamischer Schriftgröße
-        doc.setFontSize(textSize);
+        doc.setFontSize(fontSize);
         doc.setFont("helvetica", "bold");
         doc.text(text, x + 49.5, y + 18, { align: 'center', maxWidth: 90 });
 
-        // Signalwort platzieren (verkleinert auf 10, nach rechts verschoben auf X=70)
         doc.setFontSize(10);
         doc.setFont("helvetica", "bolditalic");
-        doc.text(signal, x + 70, y + 36, { align: 'center' });
+        doc.text(signal, x + 65, y + 36, { align: 'center' });
 
-        // GHS Bilder einfügen
         for(let g = 0; g < selectedGhs.length; g++) {
-            const fileName = `ghs_${selectedGhs[g]}.png`;
             try {
-                // Bilder werden direkt aus dem Hauptverzeichnis geladen
-                doc.addImage(fileName, 'PNG', x + 5 + (g * 11), y + 29, 9, 9);
-            } catch(e) {
-                console.error("Konnte Bild nicht laden:", fileName);
-            }
+                doc.addImage(`ghs_${selectedGhs[g]}.png`, 'PNG', x + 5 + (g * 10), y + 29, 9, 9);
+            } catch(e) {}
         }
 
-        // Pfeil zeichnen (Schaft + Dreieck für scharfe Spitze)
         if(arrow !== 'none') {
             doc.setFillColor(isDark ? 255 : 0);
-            const ax = x + 85; 
-            const ay = y + 34;
-            if(arrow === 'right') {
-                doc.rect(ax-4, ay-1.5, 6, 3, 'F');
-                doc.triangle(ax+2, ay-4, ax+2, ay+4, ax+7, ay, 'F');
-            } else if(arrow === 'left') {
-                doc.rect(ax-2, ay-1.5, 6, 3, 'F');
-                doc.triangle(ax-2, ay-4, ax-2, ay+4, ax-7, ay, 'F');
-            } else if(arrow === 'up') {
-                doc.rect(ax-1.5, ay, 3, 6, 'F');
-                doc.triangle(ax-4, ay, ax+4, ay, ax, ay-5, 'F');
-            } else if(arrow === 'down') {
-                doc.rect(ax-1.5, ay-6, 3, 6, 'F');
-                doc.triangle(ax-4, ay, ax+4, ay, ax, ay+5, 'F');
-            }
+            const ax = x + 85; const ay = y + 34;
+            if(arrow === 'right') { doc.rect(ax-4, ay-1.5, 6, 3, 'F'); doc.triangle(ax+2, ay-4, ax+2, ay+4, ax+7, ay, 'F'); }
+            else if(arrow === 'left') { doc.rect(ax-2, ay-1.5, 6, 3, 'F'); doc.triangle(ax-2, ay-4, ax-2, ay+4, ax-7, ay, 'F'); }
+            else if(arrow === 'up') { doc.rect(ax-1.5, ay, 3, 6, 'F'); doc.triangle(ax-4, ay, ax+4, ay, ax, ay-5, 'F'); }
+            else if(arrow === 'down') { doc.rect(ax-1.5, ay-6, 3, 6, 'F'); doc.triangle(ax-4, ay, ax+4, ay, ax, ay+5, 'F'); }
         }
     }
-    doc.save("AP_Schilder_Druckbogen.pdf");
+    doc.save("AP_Rohrleitungs_Schilder.pdf");
 };
 
-// Initialer Aufruf
 updatePreview();
