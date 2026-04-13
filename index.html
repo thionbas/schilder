@@ -11,8 +11,9 @@
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
 
     <header class="bg-[#064e3b] p-5 shadow-md">
-        <div class="max-w-6xl mx-auto">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
             <h1 class="text-3xl font-black text-white tracking-widest uppercase">AP SCHILDER APP</h1>
+            <a href="https://thionbas.github.io/printerapp" class="text-white border border-white px-4 py-2 rounded hover:bg-white hover:text-[#064e3b] transition font-bold uppercase text-sm tracking-wider">← ZURÜCK</a>
         </div>
     </header>
 
@@ -52,10 +53,10 @@
 
                 <div>
                     <label class="flex justify-between text-sm font-bold mb-1 text-gray-600 uppercase">
-                        <span>Schriftgröße Text</span>
-                        <span id="textSizeDisplay" class="text-[#064e3b]">26</span>
+                        <span>Schriftgröße</span>
+                        <span id="fontSizeVal" class="text-[#064e3b]">30</span>
                     </label>
-                    <input type="range" id="textSize" min="10" max="80" value="26" class="w-full cursor-pointer accent-[#064e3b]">
+                    <input type="range" id="textSize" min="10" max="80" value="30" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#064e3b]">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -81,18 +82,28 @@
 
                 <div>
                     <label class="block text-sm font-bold mb-2 text-gray-600 uppercase">GHS Symbole (Max. 5)</label>
-                    <div id="ghsPicker" class="grid grid-cols-3 md:grid-cols-5 gap-2 bg-gray-50 p-3 rounded-md border-2">
-                        </div>
+                    <div id="ghsPicker" class="grid grid-cols-3 md:grid-cols-5 gap-2 bg-gray-50 p-3 rounded-md border-2"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-md border-2">
+                    <div>
+                        <label class="block text-xs font-bold mb-1 text-gray-500 uppercase">Start-Position (1-12)</label>
+                        <input type="number" id="startPos" min="1" max="12" value="1" class="w-full p-2 border rounded font-bold outline-none focus:border-[#064e3b]">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1 text-gray-500 uppercase">Anzahl Etiketten</label>
+                        <input type="number" id="printCount" min="1" max="12" value="12" class="w-full p-2 border rounded font-bold outline-none focus:border-[#064e3b]">
+                    </div>
                 </div>
             </div>
 
-            <button id="pdfBtn" class="w-full bg-[#064e3b] text-white py-4 rounded-md font-black text-2xl hover:bg-green-800 transition-all shadow-md mt-8 tracking-widest">
-                DRUCKEN
+            <button id="pdfBtn" class="w-full bg-[#064e3b] text-white py-4 rounded-md font-black text-2xl hover:bg-green-800 transition-all shadow-md mt-8 tracking-widest uppercase">
+                PDF DRUCKEN
             </button>
         </section>
 
         <section class="flex flex-col items-center">
-            <span class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-widest">Live-Vorschau</span>
+            <span class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-widest">Vorschau (Einzelnes Etikett)</span>
             <div class="preview-wrapper shadow-2xl">
                 <div id="previewCard" class="label-box">
                     <div id="pText" class="label-text">TEXT</div>
@@ -105,9 +116,8 @@
                     </div>
                 </div>
             </div>
-            <p class="mt-6 text-xs text-gray-500 text-center">
-                Optimiert für 99,1 x 42,3 mm Etiketten.<br>
-                Beim Drucken: <b>Skalierung 100%</b> oder <b>Tatsächliche Größe</b> wählen.
+            <p class="mt-6 text-xs text-gray-500 text-center uppercase">
+                Optimiert für 99,1 x 42,3 mm (Avery L4743REV)
             </p>
         </section>
     </main>
